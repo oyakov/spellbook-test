@@ -1,0 +1,27 @@
+{
+  "name": "spellbook-test",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "npm run build && npm start",
+    "test:local": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.5",
+    "playwright": "^1.58.2",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^4.21.2",
+    "pdfjs-dist": "^5.5.207"
+  }
+}

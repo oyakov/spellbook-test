@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spellbook | AI Legal Assistant</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&family=Inter:wght@100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">✨</span>
+                    <span class="logo-text">Spellbook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" id="nav-chat">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Chat</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-library">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-text">Library</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-docs">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-text">Documents</span>
+                </a>
+            </nav>
+            <div class="documents-section" id="docs-sidebar-section" style="display: none;">
+                <h3>Uploaded Documents</h3>
+                <div id="document-list" class="document-list">
+                    <!-- Documents will be added here -->
+                    <div class="empty-docs">No documents uploaded</div>
+                </div>
+            </div>
+            <div class="documents-section" id="library-sidebar-section" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h3 style="margin-bottom: 0;">Legal Templates</h3>
+                    <input type="file" id="library-upload" accept=".txt,.png,.jpg,.jpeg,.pdf" style="display: none;">
+                    <button class="icon-btn" onclick="document.getElementById('library-upload').click()" aria-label="Add Template" style="width: 24px; height: 24px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 16px;">+</button>
+                </div>
+                <div id="library-list" class="document-list">
+                    <!-- Library items will be added here -->
+                    <div class="empty-docs">Loading templates...</div>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">User</span>
+                        <span class="user-plan">Free Plan</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="chat-header">
+                <div class="header-left">
+                    <h1>Legal Assistant</h1>
+                    <span class="status-badge">Online</span>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn">🔍</button>
+                    <button class="icon-btn">⚙️</button>
+                    <button class="btn btn-primary">Upgrade</button>
+                </div>
+            </header>
+
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="message assistant">
+                        <div class="message-content response-text">
+                            Hello! I am your Spellbook AI assistant. How can I help you with your legal documents today?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Input Card -->
+            <div class="input-container">
+                <div class="input-card">
+                    <div class="input-actions-top">
+                        <button class="action-tag">Review contract</button>
+                        <button class="action-tag">Draft clause</button>
+                        <button class="action-tag">Explain legal terms</button>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <div id="mentions-dropdown" class="mentions-dropdown" style="display: none;"></div>
+                        <textarea id="chat-input" placeholder="Ask me anything about your contract..."
+                            rows="1"></textarea>
+                        <button id="send-btn" class="send-btn">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-actions-bottom">
+                        <div class="left-actions">
+                            <input type="file" id="doc-upload" accept=".pdf,.txt" style="display: none;">
+                            <button id="attach-btn" class="icon-btn-text">📎 Attach</button>
+                            <button class="icon-btn-text">🎤 Voice</button>
+                        </div>
+                        <div class="right-actions">
+                            <span class="char-count">0/2000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button id="close-settings" class="icon-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <label>LLM Provider</label>
+                    <select id="llm-provider">
+                        <option value="gemini">Google Gemini (Cloud)</option>
+                        <option value="lmstudio">LM Studio (Local)</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label>Embedding Provider</label>
+                    <select id="embed-provider">
+                        <option value="gemini">Google Gemini (Cloud)</option>
+                        <option value="lmstudio">LM Studio (Local)</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label>Gemini API Key</label>
+                    <div class="input-with-hint">
+                        <input type="password" id="gemini-api-key" placeholder="AIza...">
+                        <small>Stored locally in your browser</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-settings" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

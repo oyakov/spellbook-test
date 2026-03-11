@@ -1,0 +1,15 @@
+MASTER SERVICE AGREEMENT
+
+This Master Service Agreement (the "Agreement") is made between the Service Provider and the Client.
+
+1. Services. The Service Provider shall perform the services described in the Statement of Work (SOW).
+
+2. Compensation. The Client shall pay the Service Provider the fees set forth in the SOW within thirty (30) days of receipt of an invoice.
+
+3. Intellectual Property. Unless otherwise specified in an SOW, all deliverables created by the Service Provider in the performance of the Services shall be the sole and exclusive property of the Client.
+
+4. Warranties. The Service Provider represents and warrants that the Services shall be performed in a professional and workmanlike manner.
+
+5. Limitation of Liability. To the maximum extent permitted by law, neither party shall be liable for any indirect, incidental, or consequential damages.
+
+6. Termination. Either party may terminate this Agreement upon thirty (30) days' written notice if the other party breaches any material term of this Agreement and fails to cure such breach.

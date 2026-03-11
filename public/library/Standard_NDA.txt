@@ -1,0 +1,18 @@
+MUTUAL NON-DISCLOSURE AGREEMENT
+
+This Mutual Non-Disclosure Agreement (the "Agreement") is entered into as of the Effective Date, by and between the parties.
+
+1. Definition of Confidential Information. "Confidential Information" means all non-public information, in any form or medium, disclosed by or on behalf of a party (the "Disclosing Party") to the other party (the "Receiving Party").
+
+2. Use of Confidential Information. The Receiving Party shall:
+   (a) use the Confidential Information solely for the purpose of evaluating and negotiating a potential business relationship between the parties;
+   (b) hold the Confidential Information in strict confidence and take reasonable precautions to protect it.
+
+3. Exclusions from Confidential Information. Confidential Information does not include information that:
+   (a) is or becomes generally available to the public other than as a result of a disclosure by the Receiving Party;
+   (b) was in the Receiving Party's possession prior to disclosure;
+   (c) is independently developed by the Receiving Party without use of the Disclosing Party's Confidential Information.
+
+4. Termination. The obligations of confidentiality under this Agreement shall survive for a period of three (3) years from the Effective Date.
+
+5. Governing Law. This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware.

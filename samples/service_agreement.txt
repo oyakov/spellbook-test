@@ -1,0 +1,19 @@
+SERVICE AGREEMENT
+
+This Service Agreement (the "Agreement") is made this 15th day of November, 2023, by and between:
+
+Client: Future Corp Ltd.
+Service Provider: Expert Consulting Services (ECS).
+
+1. Services Provided. The Service Provider agrees to provide the following services to the Client:
+   - Strategic business analysis and market research.
+   - Monthly performance reports and executive summaries.
+   - Implementation of new software systems for project management.
+
+2. Term of Agreement. This Agreement shall commence on the Effective Date and shall continue until the services are completed or either party terminates the Agreement with thirty (30) days' written notice.
+
+3. Payment. The Client shall pay the Service Provider a monthly fee of $5,000 USD for the duration of this Agreement. Payments are due within fifteen (15) days of the invoice date.
+
+4. Confidentiality. Both parties agree to keep all business information and trade secrets strictly confidential and not to disclose such information to any third party without prior written consent.
+
+5. Limitation of Liability. In no event shall the Service Provider be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the services provided under this Agreement.

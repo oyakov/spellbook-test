@@ -1,0 +1,9 @@
+Type: Audio Briefing
+Duration: 02:45
+Content: This is a legal briefing regarding the new Service Agreement terms.
+Key points:
+- Payment terms shifted from Net 30 to Net 15.
+- Liability cap increased to 2x contract value.
+- Dispute resolution via arbitration in New York.
+- Specific clauses on data privacy and GDPR compliance.
+- Termination notice period is now 60 days.
