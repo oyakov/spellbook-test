@@ -3,6 +3,8 @@ import express from 'express';
 import session from 'express-session';
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
@@ -14,10 +16,56 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 80;
 
+// Security headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": ["'self'", "data:", "https:"],
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Vite/Frontend needs these
+            "connect-src": ["'self'", "https://houndy-southwestwardly-anastasia.ngrok-free.dev", "http://localhost:1234"]
+        }
+    }
+}));
+
 // Trust first proxy (Nginx)
 app.set('trust proxy', 1);
 
-app.use(cors());
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const loginLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // Limit each IP to 5 login attempts per hour
+    message: { error: 'Too many login attempts, please try again after an hour' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+app.use('/api/', limiter);
+app.use('/api/login', loginLimiter);
+
+// Restricted CORS
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+    ? [process.env.PUBLIC_URL || 'https://37.1.197.100'] 
+    : ['http://localhost:5173'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
 app.use(express.json({ limit: '50mb' }));
 
 // Session configuration
@@ -234,7 +282,8 @@ app.get('/api/library', requireAuth, async (req, res) => {
     try {
         const libraryPath = path.join(__dirname, 'public', 'library');
         const files = await fs.readdir(libraryPath);
-        res.json(files);
+        // Filter out hidden files
+        res.json(files.filter(f => !f.startsWith('.')));
     } catch (error) {
         console.error('Error reading library directory:', error);
         res.status(500).json({ error: 'Failed to read library documents' });
@@ -248,18 +297,23 @@ app.post('/api/library', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Filename and base64 content are required' });
         }
         
+        // Sanitize filename to prevent path traversal
+        const safeFilename = path.basename(filename);
+        if (safeFilename !== filename) {
+            return res.status(400).json({ error: 'Invalid filename' });
+        }
+        
         // Remove data URI prefix if present
         const base64Data = base64.replace(/^data:.*,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
         
-        const publicPath = path.join(__dirname, 'public', 'library', filename);
-        // Also save to dist so it works without a restart
-        const distPath = path.join(__dirname, 'dist', 'library', filename);
+        const publicPath = path.join(__dirname, 'public', 'library', safeFilename);
+        const distPath = path.join(__dirname, 'dist', 'library', safeFilename);
         
         await fs.writeFile(publicPath, buffer);
         await fs.writeFile(distPath, buffer).catch(() => console.warn('dist/library not ready'));
         
-        res.json({ message: 'File saved successfully', filename });
+        res.json({ message: 'File saved successfully', filename: safeFilename });
     } catch (error) {
         console.error('Error saving library file:', error);
         res.status(500).json({ error: 'Failed to save library file' });
@@ -269,8 +323,13 @@ app.post('/api/library', requireAuth, async (req, res) => {
 app.delete('/api/library/:filename', requireAuth, async (req, res) => {
     try {
         const { filename } = req.params;
-        const publicPath = path.join(__dirname, 'public', 'library', filename);
-        const distPath = path.join(__dirname, 'dist', 'library', filename);
+        const safeFilename = path.basename(filename);
+        if (safeFilename !== filename) {
+            return res.status(400).json({ error: 'Invalid filename' });
+        }
+
+        const publicPath = path.join(__dirname, 'public', 'library', safeFilename);
+        const distPath = path.join(__dirname, 'dist', 'library', safeFilename);
         
         await fs.unlink(publicPath).catch(() => console.warn('File not in public/library'));
         await fs.unlink(distPath).catch(() => console.warn('File not in dist/library'));
