@@ -14,6 +14,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 80;
 
+// Trust first proxy (Nginx)
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
