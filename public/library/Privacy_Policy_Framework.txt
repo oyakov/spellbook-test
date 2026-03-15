@@ -1,0 +1,7 @@
+Privacy Policy Framework
+
+1. Introduction: We value your privacy.
+2. Data Collection: We collect [List of Data].
+3. Purpose: Data is used for [Service Provision/Marketing].
+4. Disclosure: We do not sell your personal data to third parties.
+5. Your Rights: You have the right to access and delete your data.

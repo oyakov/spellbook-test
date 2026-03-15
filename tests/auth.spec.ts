@@ -23,7 +23,8 @@ test.describe('Authentication Flow', () => {
     });
 
     test('should succeed login with correct password', async ({ page }) => {
-        await page.fill('#login-password', 'admin123');
+        const password = process.env.LOGIN_PASSWORD || 'G09L_Spellbook_2026!';
+        await page.fill('#login-password', password);
         await page.click('#login-btn');
         const overlay = page.locator('#login-overlay');
         await overlay.waitFor({ state: 'hidden' });
@@ -35,7 +36,8 @@ test.describe('Authentication Flow', () => {
     });
 
     test('should logout successfully', async ({ page }) => {
-        await page.fill('#login-password', 'admin123');
+        const password = process.env.LOGIN_PASSWORD || 'G09L_Spellbook_2026!';
+        await page.fill('#login-password', password);
         await page.click('#login-btn');
         const overlay = page.locator('#login-overlay');
         await overlay.waitFor({ state: 'hidden' });

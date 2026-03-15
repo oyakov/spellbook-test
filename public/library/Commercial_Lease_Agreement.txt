@@ -1,0 +1,10 @@
+Commercial Lease Agreement
+
+Landlord: [Name]
+Tenant: [Name]
+Premises: [Address]
+
+1. Term: [Years/Months] commencing on [Date].
+2. Rent: [Amount] payable monthly in advance.
+3. Use: The premises shall be used only for [Type of Business].
+4. Maintenance: Tenant shall be responsible for minor repairs.
