@@ -35,7 +35,7 @@ else
     cd spellbook-test
     git pull origin main
 fi
-docker-compose up -d --build
+docker compose up -d --build
 "@
 
 ssh 37.1.197.100 $RemoteCmd
