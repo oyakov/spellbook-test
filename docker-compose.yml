@@ -4,6 +4,9 @@ services:
       context: .
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LOGIN_PASSWORD=${LOGIN_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - NODE_ENV=production
     restart: unless-stopped
 
   nginx:
