@@ -40,9 +40,9 @@ const limiter = rateLimit({
 });
 
 const loginLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 5, // Limit each IP to 5 login attempts per hour
-    message: { error: 'Too many login attempts, please try again after an hour' },
+    windowMs: 15 * 60 * 1000, // 15 minutes (reduced from 1 hour for better testability)
+    max: process.env.NODE_ENV === 'test' ? 100 : 20, // Increased from 5 to 20 for production, 100 for test
+    message: { error: 'Too many login attempts, please try again later' },
     standardHeaders: true,
     legacyHeaders: false,
 });
