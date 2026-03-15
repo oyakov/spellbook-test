@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test('verify chat input alignment', async ({ page }) => {
-    await page.goto('http://localhost:8888');
+    await login(page);
 
     // Wait for the input card
     const inputCard = page.locator('.input-card');

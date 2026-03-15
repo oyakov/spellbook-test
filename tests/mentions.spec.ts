@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test.describe('Multimedia & @ Mentions', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:8888');
+        await login(page);
         // Ensure the app is loaded and the specific item we need is ready
         await page.click('#nav-library');
         const logoItem = page.locator('.library-item:has-text("Logo Concept")');

@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test.describe('Settings & Provider Switching', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:8888');
+        await login(page);
     });
 
     test('should open and close settings modal', async ({ page }) => {

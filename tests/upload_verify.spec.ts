@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import { login } from './helpers';
 
 test('upload sample documents and verify RAG status', async ({ page }) => {
-    // Go to the app
-    await page.goto('http://localhost:8888');
+    await login(page);
 
     // Click Documents tab
     await page.click('#nav-docs');

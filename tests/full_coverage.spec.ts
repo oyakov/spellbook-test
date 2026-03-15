@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test.describe('Spellbook Full UI Coverage', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:8888');
+        await login(page);
     });
 
     test('Sidebar Navigation should switch sections', async ({ page }) => {

@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test('capture screenshots for walkthrough', async ({ page }) => {
-    await page.goto('http://localhost:8888');
+    await login(page);
 
     // 1. Library with Multimedia
     await page.click('#nav-library');

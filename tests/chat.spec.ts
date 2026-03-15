@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
+import { login } from './helpers';
 
 test.describe('Spellbook Chat App', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/');
+        await login(page);
     });
 
     test('should load the page correctly', async ({ page }) => {
         await expect(page).toHaveTitle(/Spellbook | AI Legal Assistant/);
-        await expect(page.locator('.logo-text')).toContainText('Spellbook');
+        await expect(page.locator('#app .logo-text')).toContainText('Spellbook');
         await expect(page.locator('.message.assistant')).toBeVisible();
     });
 
