@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 // Password management
-const LOGIN_PASSWORD = process.env.LOGIN_PASSWORD || 'admin123';
+const LOGIN_PASSWORD = (process.env.LOGIN_PASSWORD || 'admin123').trim();
 const HASHED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD, 10);
 
 if (!process.env.LOGIN_PASSWORD) {
@@ -78,7 +78,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(400).json({ error: 'Password is required' });
     }
 
-    const match = await bcrypt.compare(password, HASHED_PASSWORD);
+    const match = await bcrypt.compare(password.trim(), HASHED_PASSWORD);
     if (match) {
         req.session.authenticated = true;
         res.json({ message: 'Login successful' });
