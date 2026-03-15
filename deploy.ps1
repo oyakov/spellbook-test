@@ -2,7 +2,6 @@
 # Set variables
 $RemoteHost = "37.1.197.100"
 $RemoteUser = "root"
-$RemotePass = "GLM2ETatD6"
 $LocalPath = "c:\Projects\spellbook-test"
 
 Write-Host "--- Starting Deployment to $RemoteHost ---" -ForegroundColor Cyan
