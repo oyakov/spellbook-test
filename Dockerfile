@@ -13,5 +13,6 @@ COPY package*.json ./
 RUN npm install --production
 COPY --from=build /app/dist ./dist
 COPY server.js ./
+RUN touch .env
 EXPOSE 80
 CMD ["npm", "start"]

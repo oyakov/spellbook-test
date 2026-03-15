@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
+import session from 'express-session';
+import bcrypt from 'bcryptjs';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,6 +16,34 @@ const port = process.env.PORT || 80;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'spellbook-secret-key-change-me',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Password management
+const LOGIN_PASSWORD = process.env.LOGIN_PASSWORD || 'admin123';
+const HASHED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD, 10);
+
+if (!process.env.LOGIN_PASSWORD) {
+    console.warn('WARNING: LOGIN_PASSWORD not set in .env. Using default: admin123');
+}
+
+// Auth Middleware
+const requireAuth = (req, res, next) => {
+    if (req.session.authenticated) {
+        next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+};
 
 // Initialize Gemini with default key
 const DEFAULT_API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -41,8 +71,37 @@ const getGeminiEmbeddingModel = (apiKey) => {
     });
 };
 
-// Chat Endpoint
-app.post('/api/chat', async (req, res) => {
+// Auth Endpoints
+app.post('/api/login', async (req, res) => {
+    const { password } = req.body;
+    if (!password) {
+        return res.status(400).json({ error: 'Password is required' });
+    }
+
+    const match = await bcrypt.compare(password, HASHED_PASSWORD);
+    if (match) {
+        req.session.authenticated = true;
+        res.json({ message: 'Login successful' });
+    } else {
+        res.status(401).json({ error: 'Invalid password' });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ message: 'Logged out successfully' });
+});
+
+app.get('/api/user', (req, res) => {
+    if (req.session.authenticated) {
+        res.json({ authenticated: true });
+    } else {
+        res.json({ authenticated: false });
+    }
+});
+
+// Chat Endpoint (Protected)
+app.post('/api/chat', requireAuth, async (req, res) => {
     try {
         const { message, history, provider, apiKey } = req.body;
         console.log(`Received ${provider || 'gemini'} chat request: "${message?.substring(0, 50)}..."`);
@@ -117,8 +176,8 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Embedding Endpoint
-app.post('/api/embed', async (req, res) => {
+// Embedding Endpoint (Protected)
+app.post('/api/embed', requireAuth, async (req, res) => {
     try {
         const { input, provider, apiKey } = req.body;
         console.log(`Received ${provider || 'gemini'} embedding request`);
@@ -167,8 +226,8 @@ app.post('/api/embed', async (req, res) => {
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Library Management Endpoints
-app.get('/api/library', async (req, res) => {
+// Library Management Endpoints (Protected)
+app.get('/api/library', requireAuth, async (req, res) => {
     try {
         const libraryPath = path.join(__dirname, 'public', 'library');
         const files = await fs.readdir(libraryPath);
@@ -179,7 +238,7 @@ app.get('/api/library', async (req, res) => {
     }
 });
 
-app.post('/api/library', async (req, res) => {
+app.post('/api/library', requireAuth, async (req, res) => {
     try {
         const { filename, base64 } = req.body;
         if (!filename || !base64) {
@@ -204,7 +263,7 @@ app.post('/api/library', async (req, res) => {
     }
 });
 
-app.delete('/api/library/:filename', async (req, res) => {
+app.delete('/api/library/:filename', requireAuth, async (req, res) => {
     try {
         const { filename } = req.params;
         const publicPath = path.join(__dirname, 'public', 'library', filename);
@@ -221,8 +280,8 @@ app.delete('/api/library/:filename', async (req, res) => {
 });
 
 // Fallback to index.html for SPA routing
-// n8n Automation Endpoint
-app.post('/api/n8n', async (req, res) => {
+// n8n Automation Endpoint (Protected)
+app.post('/api/n8n', requireAuth, async (req, res) => {
     try {
         const { message } = req.body;
         console.log(`Forwarding to n8n: "${message?.substring(0, 50)}..."`);

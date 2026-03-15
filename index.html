@@ -152,11 +152,32 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <button id="logout-btn" class="btn btn-secondary" style="background: #ef4444; border: none; color: white;">Logout</button>
                 <button id="save-settings" class="btn btn-primary">Save Changes</button>
             </div>
         </div>
     </div>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="modal" style="display: none; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div class="logo" style="margin-bottom: 24px; justify-content: center;">
+                <span class="logo-icon" style="font-size: 32px;">✨</span>
+                <span class="logo-text" style="font-size: 24px;">Spellbook</span>
+            </div>
+            <h2>Secure Access</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Please enter your password to continue.</p>
+            <div class="settings-group">
+                <input type="password" id="login-password" placeholder="Enter password" style="width: 100%; text-align: center; font-size: 18px; padding: 12px;">
+            </div>
+            <div id="login-error" style="color: #ef4444; margin-top: 8px; display: none;">Invalid password</div>
+            <div class="modal-footer" style="margin-top: 24px;">
+                <button id="login-btn" class="btn btn-primary" style="width: 100%;">Login</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
 </body>
 

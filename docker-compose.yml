@@ -2,8 +2,18 @@ services:
   spellbook:
     build:
       context: .
-    ports:
-      - "8888:80"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8880:80"
+      - "8843:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - spellbook
     restart: unless-stopped

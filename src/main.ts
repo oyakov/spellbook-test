@@ -22,6 +22,11 @@ const saveSettingsBtn = document.getElementById('save-settings');
 const llmProviderSelect = document.getElementById('llm-provider') as HTMLSelectElement;
 const embedProviderSelect = document.getElementById('embed-provider') as HTMLSelectElement;
 const geminiApiKeyInput = document.getElementById('gemini-api-key') as HTMLInputElement;
+const loginOverlay = document.getElementById('login-overlay');
+const loginPasswordInput = document.getElementById('login-password') as HTMLInputElement;
+const loginBtn = document.getElementById('login-btn');
+const loginError = document.getElementById('login-error');
+const logoutBtn = document.getElementById('logout-btn');
 
 // Settings State
 interface Settings {
@@ -57,6 +62,85 @@ interface DocMeta {
 
 let vectorStore: DocumentChunk[] = [];
 let allDocs: DocMeta[] = [];
+
+// Auth State
+let isAuthenticated = false;
+
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/user');
+    const data = await res.json();
+    isAuthenticated = data.authenticated;
+    updateAuthUI();
+  } catch (err) {
+    console.error("Auth check failed", err);
+  }
+}
+
+function updateAuthUI() {
+  if (loginOverlay) {
+    loginOverlay.style.display = isAuthenticated ? 'none' : 'flex';
+  }
+}
+
+async function handleLogin() {
+  const password = loginPasswordInput?.value;
+  if (!password) return;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    if (res.ok) {
+      isAuthenticated = true;
+      if (loginError) loginError.style.display = 'none';
+      if (loginPasswordInput) loginPasswordInput.value = '';
+      updateAuthUI();
+      loadLibraryDocuments(); // Initial load after auth
+    } else {
+      if (loginError) loginError.style.display = 'block';
+    }
+  } catch (err) {
+    console.error("Login failed", err);
+  }
+}
+
+async function handleLogout() {
+  try {
+    await fetch('/api/logout', { method: 'POST' });
+    isAuthenticated = false;
+    updateAuthUI();
+    // Clear state
+    vectorStore = [];
+    allDocs = [];
+    chatHistory = [];
+    if (chatMessages) chatMessages.innerHTML = '';
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+}
+
+if (loginBtn) loginBtn.addEventListener('click', handleLogin);
+if (loginPasswordInput) {
+  loginPasswordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+}
+if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+// Helper for authenticated fetches
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, options);
+  if (res.status === 401) {
+    isAuthenticated = false;
+    updateAuthUI();
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
 
 // Chat History
 let chatHistory: { role: string, text: string }[] = [];
@@ -205,7 +289,7 @@ if (libraryUpload) {
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64 = event.target?.result as string;
-        const res = await fetch('/api/library', {
+        const res = await authFetch('/api/library', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename: file.name, base64 })
@@ -264,7 +348,7 @@ async function loadLibraryDocuments() {
 
   let templates: string[] = [];
   try {
-    const res = await fetch('/api/library');
+    const res = await authFetch('/api/library');
     if (res.ok) {
       templates = await res.json();
     }
@@ -285,7 +369,7 @@ async function loadLibraryDocuments() {
     addLibraryDocToUI(fileName, docId, type);
 
     try {
-      const response = await fetch(`/library/${fileName}`);
+      const response = await authFetch(`/library/${fileName}`);
       if (isImage) {
         const name = fileName.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
         allDocs.push({ id: docId, name, type: 'image', source: `Library: ${fileName}` });
@@ -335,7 +419,7 @@ function addLibraryDocToUI(sourceFileName: string, id: string, type: 'text' | 'i
     deleteBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       try {
-        const res = await fetch(`/api/library/${encodeURIComponent(sourceFileName)}`, { method: 'DELETE' });
+        const res = await authFetch(`/api/library/${encodeURIComponent(sourceFileName)}`, { method: 'DELETE' });
         if (res.ok) {
           loadLibraryDocuments(); // Reload library from server
         }
@@ -356,7 +440,7 @@ function updateLibraryDocStatus(id: string, status: 'embedding' | 'ready' | 'err
 }
 
 // Initial Load
-loadLibraryDocuments();
+checkAuth();
 if (librarySidebarSection) librarySidebarSection.style.display = 'flex';
 
 // RAG Logic
@@ -422,7 +506,7 @@ async function embedChunks(chunks: string[], source: string): Promise<DocumentCh
   const embedded: DocumentChunk[] = [];
   for (const chunk of chunks) {
     try {
-      const response = await fetch('/api/embed', {
+      const response = await authFetch('/api/embed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -464,7 +548,7 @@ async function getContext(query: string, topK = 3): Promise<string> {
     let lastError;
 
     try {
-      response = await fetch('/api/embed', {
+      response = await authFetch('/api/embed', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -545,7 +629,7 @@ async function sendMessage() {
   try {
     if (text.startsWith(n8nPrefix)) {
       const n8nMessage = text.substring(n8nPrefix.length).trim();
-      const n8nResponse = await fetch('/api/n8n', {
+      const n8nResponse = await authFetch('/api/n8n', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: n8nMessage })
@@ -585,7 +669,7 @@ ${mentionContext || "None"}
 User Question: ${text}
 `;
 
-    const fetchResponse = await fetch('/api/chat', {
+    const fetchResponse = await authFetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
