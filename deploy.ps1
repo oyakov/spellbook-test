@@ -18,11 +18,13 @@ if ($status) {
     Write-Host "No changes to commit."
 }
 
-# 2. Add SSH Fingerprint to known_hosts (Plink)
-Write-Host "[2/4] Ensuring host key is cached..."
-# Use -batch and the host key if possible, or pipe 'y' to plink
-$hostKey = "ssh-ed25519 255 SHA256:Pjp1bZaNclrop0DtUfw/RUrjQbBu87V0Bnni+xAZ9jA"
-& { echo y } | plink -pw $RemotePass -hostkey "$hostKey" "${RemoteUser}@${RemoteHost}" "exit"
+# 2. (Optional) Check SSH connection
+Write-Host "[2/4] Verifying SSH connection..."
+ssh -o BatchMode=yes 37.1.197.100 "exit"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "SSH connection failed. Please ensure your public key is in the server's authorized_keys."
+    exit
+}
 
 # 3. Remote Deployment Commands
 Write-Host "[3/4] Running deployment commands on remote server..."
@@ -37,7 +39,7 @@ fi
 docker-compose up -d --build
 "@
 
-plink -pw $RemotePass "${RemoteUser}@${RemoteHost}" $RemoteCmd
+ssh 37.1.197.100 $RemoteCmd
 
 # 4. Success Message
 Write-Host "[4/4] Deployment sequence completed!" -ForegroundColor Green
