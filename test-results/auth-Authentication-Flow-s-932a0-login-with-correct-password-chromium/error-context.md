@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: ✨
+      - generic [ref=e7]: Spellbook
+    - navigation [ref=e8]:
+      - link "💬 Chat" [ref=e9] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e10]: 💬
+        - generic [ref=e11]: Chat
+      - link "📚 Library" [ref=e12] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e13]: 📚
+        - generic [ref=e14]: Library
+      - link "📁 Documents" [ref=e15] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e16]: 📁
+        - generic [ref=e17]: Documents
+    - generic [ref=e19]:
+      - generic [ref=e20]: U
+      - generic [ref=e21]:
+        - generic [ref=e22]: User
+        - generic [ref=e23]: Free Plan
+  - main [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - heading "Legal Assistant" [level=1] [ref=e27]
+        - text: Online
+      - generic [ref=e28]:
+        - button "🔍" [ref=e29] [cursor=pointer]
+        - button "⚙️" [ref=e30] [cursor=pointer]
+        - button "Upgrade" [ref=e31] [cursor=pointer]
+    - generic [ref=e35]: Hello! I am your Spellbook AI assistant. How can I help you with your legal documents today?
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - button "Review contract" [ref=e39] [cursor=pointer]
+        - button "Draft clause" [ref=e40] [cursor=pointer]
+        - button "Explain legal terms" [ref=e41] [cursor=pointer]
+      - generic [ref=e42]:
+        - textbox "Ask me anything about your contract..." [ref=e43]
+        - button [ref=e44] [cursor=pointer]:
+          - img [ref=e45]
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - button "📎 Attach" [ref=e49] [cursor=pointer]
+          - button "🎤 Voice" [ref=e50] [cursor=pointer]
+        - generic [ref=e51]: 0/2000
+```
