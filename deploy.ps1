@@ -20,7 +20,9 @@ if ($status) {
 
 # 2. Add SSH Fingerprint to known_hosts (Plink)
 Write-Host "[2/4] Ensuring host key is cached..."
-echo y | plink -pw $RemotePass "${RemoteUser}@${RemoteHost}" "exit"
+# Use -batch and the host key if possible, or pipe 'y' to plink
+$hostKey = "ssh-ed25519 255 SHA256:Pjp1bZaNclrop0DtUfw/RUrjQbBu87V0Bnni+xAZ9jA"
+& { echo y } | plink -pw $RemotePass -hostkey "$hostKey" "${RemoteUser}@${RemoteHost}" "exit"
 
 # 3. Remote Deployment Commands
 Write-Host "[3/4] Running deployment commands on remote server..."
