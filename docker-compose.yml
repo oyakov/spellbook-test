@@ -8,6 +8,8 @@ services:
       - SESSION_SECRET=${SESSION_SECRET}
       - NODE_ENV=production
     restart: unless-stopped
+    volumes:
+      - ./public/library:/app/public/library
 
   nginx:
     image: nginx:alpine
