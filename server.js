@@ -277,6 +277,9 @@ app.post('/api/embed', requireAuth, async (req, res) => {
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, 'dist')));
 
+// Serve library files (Protected)
+app.use('/library', requireAuth, express.static(path.join(__dirname, 'public', 'library')));
+
 // Library Management Endpoints (Protected)
 app.get('/api/library', requireAuth, async (req, res) => {
     try {
