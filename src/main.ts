@@ -345,15 +345,23 @@ navItems.forEach(item => {
 
 // Library Logic
 async function loadLibraryDocuments() {
-  if (libraryList) {
-    libraryList.innerHTML = '';
+  console.log("loadLibraryDocuments called");
+  const list = document.getElementById('library-list');
+  console.log("libraryList element:", list);
+  if (!list) {
+    console.error("library-list element not found!");
+    return;
   }
+  list.innerHTML = '';
 
   let templates: string[] = [];
   try {
+    console.log("Fetching library documents from /api/library...");
     const res = await authFetch('/api/library');
+    console.log("Library response status:", res.status);
     if (res.ok) {
       templates = await res.json();
+      console.log("Templates received:", templates);
     }
   } catch (err) {
     console.error("Failed to load library templates from server", err);
@@ -363,6 +371,7 @@ async function loadLibraryDocuments() {
   allDocs = allDocs.filter(d => !d.source.startsWith('Library: '));
   vectorStore = vectorStore.filter(d => !d.source.startsWith('Library: '));
 
+  console.log(`Processing ${templates.length} templates...`);
   for (const fileName of templates) {
     const docId = `lib-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const isImage = fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
