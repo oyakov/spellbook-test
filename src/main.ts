@@ -72,6 +72,9 @@ async function checkAuth() {
     const data = await res.json();
     isAuthenticated = data.authenticated;
     updateAuthUI();
+    if (isAuthenticated) {
+      loadLibraryDocuments();
+    }
   } catch (err) {
     console.error("Auth check failed", err);
   }
