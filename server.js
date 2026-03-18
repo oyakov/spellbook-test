@@ -34,14 +34,14 @@ app.set('trust proxy', 1);
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // Increased from 100 to 500 for testing
+    max: 100, // Reasonable limit for general API
     standardHeaders: true,
     legacyHeaders: false,
 });
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Increased from 5 to 100 for testing
+    max: 10, // Restrictive limit for logins
     message: { error: 'Too many login attempts, please try again later' },
     standardHeaders: true,
     legacyHeaders: false,
