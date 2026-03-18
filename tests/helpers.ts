@@ -1,7 +1,10 @@
 import { Page, expect } from '@playwright/test';
 
 export async function login(page: Page) {
-    const password = process.env.LOGIN_PASSWORD || 'admin123';
+    const password = process.env.LOGIN_PASSWORD;
+    if (!password) {
+        throw new Error('LOGIN_PASSWORD environment variable is required for tests.');
+    }
     
     // Check if redirect to / occurred or if we are already there
     if (!page.url().includes('://')) {

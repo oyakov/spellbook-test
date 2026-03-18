@@ -80,12 +80,14 @@ app.use(session({
 }));
 
 // Password management
-const LOGIN_PASSWORD = (process.env.LOGIN_PASSWORD || 'admin123').trim();
-const HASHED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD, 10);
+const LOGIN_PASSWORD = process.env.LOGIN_PASSWORD;
 
-if (!process.env.LOGIN_PASSWORD) {
-    console.warn('WARNING: LOGIN_PASSWORD not set in .env. Using default: admin123');
+if (!LOGIN_PASSWORD) {
+    console.error('CRITICAL: LOGIN_PASSWORD not set in environment. Application exiting.');
+    process.exit(1);
 }
+
+const HASHED_PASSWORD = bcrypt.hashSync(LOGIN_PASSWORD.trim(), 10);
 
 // Auth Middleware
 const requireAuth = (req, res, next) => {

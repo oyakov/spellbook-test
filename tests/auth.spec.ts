@@ -23,7 +23,8 @@ test.describe('Authentication Flow', () => {
     });
 
     test('should succeed login with correct password', async ({ page }) => {
-        const password = process.env.LOGIN_PASSWORD || 'admin123';
+        const password = process.env.LOGIN_PASSWORD;
+        if (!password) throw new Error('LOGIN_PASSWORD not set');
         await page.fill('#login-password', password);
         await page.click('#login-btn');
         const overlay = page.locator('#login-overlay');
@@ -36,7 +37,8 @@ test.describe('Authentication Flow', () => {
     });
 
     test('should logout successfully', async ({ page }) => {
-        const password = process.env.LOGIN_PASSWORD || 'admin123';
+        const password = process.env.LOGIN_PASSWORD;
+        if (!password) throw new Error('LOGIN_PASSWORD not set');
         await page.fill('#login-password', password);
         await page.click('#login-btn');
         const overlay = page.locator('#login-overlay');
