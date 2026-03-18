@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test';
 
 export async function login(page: Page) {
-    const password = process.env.LOGIN_PASSWORD || 'G09L_Spellbook_2026!';
+    const password = process.env.LOGIN_PASSWORD || 'admin123';
     
     // Check if redirect to / occurred or if we are already there
     if (!page.url().includes('://')) {
