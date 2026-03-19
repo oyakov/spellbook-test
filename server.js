@@ -31,33 +31,39 @@ app.use(helmet({
 // Trust first proxy (Nginx)
 app.set('trust proxy', 1);
 
-// Rate limiting
+const RATE_LIMIT_WINDOW = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'); // Default 15 mins
+const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '100');
+const LOGIN_LIMIT_WINDOW = parseInt(process.env.LOGIN_LIMIT_WINDOW_MS || '900000');
+const LOGIN_LIMIT_MAX = parseInt(process.env.LOGIN_LIMIT_MAX || '10');
+
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Reasonable limit for general API
+    windowMs: RATE_LIMIT_WINDOW,
+    max: RATE_LIMIT_MAX,
     standardHeaders: true,
     legacyHeaders: false,
 });
 
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Restrictive limit for logins
+    windowMs: LOGIN_LIMIT_WINDOW,
+    max: LOGIN_LIMIT_MAX,
     message: { error: 'Too many login attempts, please try again later' },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
+// Rate limiting setup
 app.use('/api/', limiter);
-app.use('/api/login', loginLimiter);
+// app.use('/api/login', loginLimiter); // Uncomment to enable login rate limiting
 
 // Restricted CORS
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? [process.env.PUBLIC_URL || 'https://37.1.197.100'] 
-    : ['http://localhost:5173'];
+    ? [process.env.PUBLIC_URL || 'https://37.1.197.100', 'https://localhost', 'http://localhost'] 
+    : ['http://localhost:5173', 'http://localhost:8888', 'http://localhost:3000'];
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        // Allow requests with no origin (like mobile apps or curl) or matching origins
+        if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -127,6 +133,7 @@ const getGeminiEmbeddingModel = (apiKey) => {
 // Auth Endpoints
 app.post('/api/login', async (req, res) => {
     const { password } = req.body;
+    console.log(`Login request received`);
     if (!password) {
         return res.status(400).json({ error: 'Password is required' });
     }

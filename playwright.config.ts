@@ -8,7 +8,8 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
     use: {
-        baseURL: 'http://localhost:8888',
+        baseURL: 'https://localhost',
+        ignoreHTTPSErrors: true,
         trace: 'on-first-retry',
     },
     projects: [
