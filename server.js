@@ -16,14 +16,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 80;
 
-// Security headers
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
             "img-src": ["'self'", "data:", "https:"],
-            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Vite/Frontend needs these
-            "connect-src": ["'self'", "https://houndy-southwestwardly-anastasia.ngrok-free.dev", "http://localhost:1234"]
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "blob:", "https://unpkg.com"],
+            "worker-src": ["'self'", "blob:", "https://unpkg.com"],
+            "connect-src": ["'self'", "https://houndy-southwestwardly-anastasia.ngrok-free.dev", "http://localhost:1234", "blob:", "https://unpkg.com"]
         }
     }
 }));

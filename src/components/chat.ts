@@ -3,14 +3,20 @@ import type { DocMeta } from '../types';
 import { scrollToBottom } from '../utils/dom';
 
 export function formatMessage(text: string, allDocs: DocMeta[]): string {
-  // Regex to find [doc:Name] or @Name and convert to links
-  let formatted = text.replace(/\[doc:([^\]]+)\]/g, (_, name) => {
+  // 1. Markdown Formatting
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
+
+  // 2. Convert [doc:Name] or @Name to links
+  formatted = formatted.replace(/\[doc:([^\]]+)\]/g, (_, name) => {
     return `<a href="#" class="message-link" onclick="event.preventDefault(); window.dispatchEvent(new CustomEvent('mention-click', {detail: '${name}'}))">${name}</a>`;
   });
 
-  // Handle @mentions, sorting by length descending to match longer names first
+  // Handle @mentions
   [...allDocs].sort((a, b) => b.name.length - a.name.length).forEach(doc => {
-    // Escape doc.name for regex use in case it has special characters
     const escapedName = doc.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const mentionRegex = new RegExp(`@${escapedName}\\b`, 'g');
     formatted = formatted.replace(mentionRegex, `<a href="#" class="message-link" onclick="event.preventDefault(); window.dispatchEvent(new CustomEvent('mention-click', {detail: '${doc.name}'}))">${doc.name}</a>`);

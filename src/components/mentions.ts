@@ -17,9 +17,13 @@ export function setupMentions(
       return;
     }
 
-    const filtered = allDocs.filter(d =>
-      d.name.toLowerCase().includes(mentionQuery.toLowerCase())
-    );
+    const filtered = allDocs.filter(d => {
+      const match = d.name.toLowerCase().includes(mentionQuery.toLowerCase()) || 
+                   d.name.replace(/_/g, ' ').toLowerCase().includes(mentionQuery.toLowerCase());
+      return match;
+    });
+
+    console.log(`mentions query: "${mentionQuery}", found ${filtered.length} matches`);
 
     if (filtered.length === 0) {
       mentionsDropdown.style.display = 'none';
@@ -33,7 +37,8 @@ export function setupMentions(
       const item = document.createElement('div');
       item.className = `mention-item ${index === selectedMentionIndex ? 'selected' : ''}`;
       const icon = doc.type === 'pdf' ? '📄' : doc.type === 'image' ? '🖼️' : doc.type === 'audio' ? '🔊' : '📚';
-      item.innerHTML = `<span class="icon">${icon}</span><span class="name">${doc.name}</span>`;
+      const displayName = doc.name.replace(/_/g, ' ');
+      item.innerHTML = `<span class=\"icon\">${icon}</span><span class=\"name\">${displayName}</span>`;
       item.addEventListener('click', () => {
         onSelect(doc);
         isMentioning = false;
@@ -45,13 +50,15 @@ export function setupMentions(
 
   chatInput.addEventListener('input', () => {
     const text = chatInput.value;
-    const caretPos = chatInput.selectionStart;
+    const caretPos = chatInput.selectionStart || 0;
     const textBeforeCaret = text.substring(0, caretPos);
     
     // Find last '@' that is either at start or after a space
     const matches = Array.from(textBeforeCaret.matchAll(/(^|\s)@/g));
     const lastMatch = matches.length > 0 ? matches[matches.length - 1] : null;
     const lastAt = lastMatch ? (lastMatch.index! + lastMatch[1].length) : -1;
+
+    console.log(`mentions check: lastAt=${lastAt}, isMentioning=${isMentioning}, allDocs=${allDocs.length}`);
 
     if (lastAt !== -1) {
       isMentioning = true;

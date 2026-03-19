@@ -39,6 +39,7 @@ if (document.getElementById('gemini-api-key')) (document.getElementById('gemini-
 // RAG State
 let vectorStore: DocumentChunk[] = [];
 let allDocs: DocMeta[] = [];
+(window as any).allDocs = allDocs; // Debugging
 let chatHistory: { role: string, text: string }[] = [];
 let isAuthenticated = false;
 
@@ -130,12 +131,16 @@ async function sendMessage() {
       return;
     }
 
-    const contextResult = await getContext(text, vectorStore, settings);
+    const currentMentions = allDocs.filter(d => text.includes(`@${d.name}`));
+    const searchScope = currentMentions.length > 0 
+      ? vectorStore.filter(chunk => currentMentions.some(m => m.name === chunk.source))
+      : vectorStore;
+
+    const contextResult = await getContext(text, searchScope, settings);
     const isError = contextResult.startsWith('__ERROR__:');
     const context = isError ? "" : contextResult;
 
-    const mentions = allDocs.filter(d => text.includes(`@${d.name}`));
-    const mentionContext = mentions.map(m => `User explicitly mentioned: ${m.name} (${m.type})`).join('\n');
+    const mentionContext = currentMentions.map(m => `User explicitly mentioned: ${m.name} (${m.type})`).join('\n');
 
     const enrichedPrompt = `
 Context from RAG:

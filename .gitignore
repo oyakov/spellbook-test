@@ -32,3 +32,6 @@ playwright/.cache/
 
 # Environment variables
 .env
+
+# Temp files
+tmp/
