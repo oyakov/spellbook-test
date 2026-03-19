@@ -31,6 +31,9 @@ app.use(helmet({
 // Trust first proxy (Nginx)
 app.set('trust proxy', 1);
 
+// RAG Architecture Note:
+// Current vector store is in-memory on the frontend for privacy and local-first compliance.
+// For production scale, consider a persistent vector store (e.g., Supabase / Pinecone).
 const RATE_LIMIT_WINDOW = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'); // Default 15 mins
 const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '100');
 const LOGIN_LIMIT_WINDOW = parseInt(process.env.LOGIN_LIMIT_WINDOW_MS || '900000');
